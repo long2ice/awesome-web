@@ -2,7 +2,7 @@ import axios from "axios";
 import { get_sign, getRandomStr } from "./sign";
 
 const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000",
 });
 
 http.interceptors.request.use((config) => {

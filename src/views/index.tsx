@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -13,8 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
-import logo from "../public/logo.png";
+import logo from "../assets/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { getPlatform } from "../apis/platform";
@@ -24,17 +22,17 @@ import MLink from "@mui/material/Link";
 import { getTopic } from "../apis/topic";
 import { GitHub, MenuBook } from "@mui/icons-material";
 import Masonry from "@mui/lab/Masonry";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
 function Index() {
   const [platforms, setPlatforms] = useState([]);
   const [platformID, setPlatformID] = useState(0);
   const [topics, setTopics] = useState([]);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      if (platformID == 0) {
+      if (platformID === 0) {
         let data = await getPlatform();
         setPlatforms(data);
       } else {
@@ -45,13 +43,6 @@ function Index() {
   }, [platformID]);
   return (
     <Container maxWidth="xl">
-      <Head>
-        <title>Awesome - Search awesome projects | Topic</title>
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
-        />
-      </Head>
       <Box
         display="flex"
         justifyContent="center"
@@ -59,7 +50,7 @@ function Index() {
         flexDirection="column"
         mb={2}
       >
-        <Image
+        <img
           src={logo}
           width="500"
           height="350"
@@ -78,7 +69,7 @@ function Index() {
         </Paper>
       </Box>
       <Masonry spacing={2}>
-        {platformID == 0 &&
+        {platformID === 0 &&
           platforms.map((item: Platform) => (
             <Grow in={true} key={item.id}>
               <Card
@@ -96,14 +87,14 @@ function Index() {
               </Card>
             </Grow>
           ))}
-        {platformID != 0 &&
+        {platformID !== 0 &&
           topics.map((item: Topic) => (
             <Grow in={true} key={item.id}>
               <Card>
                 <CardContent>
                   <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
                     {item.name}
-                    {item.sub_name == undefined ? "" : ` - ${item.sub_name}`}
+                    {item.sub_name === undefined ? "" : ` - ${item.sub_name}`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {item.description}
@@ -112,7 +103,7 @@ function Index() {
                 <CardActions>
                   <Button
                     size="small"
-                    onClick={() => open(item.github_url)}
+                    onClick={() => window.open(item.github_url)}
                     variant="outlined"
                     startIcon={<GitHub />}
                   >
@@ -122,7 +113,7 @@ function Index() {
                     size="small"
                     variant="outlined"
                     startIcon={<MenuBook />}
-                    onClick={() => router.push(`/topic/${item.id}`)}
+                    onClick={() => navigate(`/topic?topic_id=${item.id}`)}
                   >
                     Explore
                   </Button>

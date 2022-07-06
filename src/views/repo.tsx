@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getTopicRepos } from "../../apis/repo";
+import { getTopicRepos } from "../apis/repo";
 import {
   Box,
   Button,
@@ -16,29 +15,30 @@ import {
   Typography,
 } from "@mui/material";
 import { Masonry } from "@mui/lab";
-import { Repo } from "../../types/response";
+import { Repo } from "../types/response";
 import { GitHub } from "@mui/icons-material";
 import { TbGitFork } from "react-icons/tb";
 import { AiFillEye, AiFillStar } from "react-icons/ai";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Image from "next/image";
-import logo from "../../public/logo.png";
+import logo from "../assets/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 dayjs.extend(relativeTime);
 
 function TopicRepos() {
-  const router = useRouter();
-  const { id } = router.query;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
     (async () => {
-      let repos = await getTopicRepos(20, 0, id);
+      const topic_id = searchParams.get("topic_id") ?? "";
+      let repos = await getTopicRepos(20, 0, topic_id);
       setRepos(repos.data);
     })();
-  }, [id]);
+  }, [searchParams]);
   return (
     <Container maxWidth="xl">
       <Box
@@ -48,12 +48,12 @@ function TopicRepos() {
         flexDirection="column"
         mb={2}
       >
-        <Image
+        <img
           src={logo}
           width="500"
           height="350"
           style={{ cursor: "pointer" }}
-          onClick={() => router.push("/")}
+          onClick={() => navigate("/")}
           alt="logo"
         />
         <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
@@ -77,7 +77,7 @@ function TopicRepos() {
                 <Typography variant="body2" color="text.secondary">
                   {item.description}
                 </Typography>
-                {item.type == "repo" && (
+                {item.type === "repo" && (
                   <Box mt={1}>
                     <Box display="flex" alignItems="center">
                       <AiFillStar />
@@ -106,20 +106,20 @@ function TopicRepos() {
                 )}
               </CardContent>
               <CardActions>
-                {item.type == "repo" && (
+                {item.type === "repo" && (
                   <Button
                     size="small"
-                    onClick={() => open(item.url)}
+                    onClick={() => window.open(item.url)}
                     variant="outlined"
                     startIcon={<GitHub />}
                   >
                     View in GitHub
                   </Button>
                 )}
-                {item.type == "resource" && (
+                {item.type === "resource" && (
                   <Button
                     size="small"
-                    onClick={() => open(item.url)}
+                    onClick={() => window.open(item.url)}
                     variant="outlined"
                   >
                     View Resource

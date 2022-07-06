@@ -1,6 +1,6 @@
 const md5 = require("md5");
 
-const secret = process.env.NEXT_PUBLIC_API_SECRET;
+const secret = process.env.REACT_APP_API_SECRET;
 const getRandomStr = (length: number) => {
   let result = "";
   let characters =

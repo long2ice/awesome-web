@@ -1,4 +1,4 @@
-import axios from "../lib/axios";
+import axios from "../axios";
 
 async function getPlatform() {
   const response = await axios.get(`/platform`);
