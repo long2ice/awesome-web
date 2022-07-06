@@ -54,7 +54,10 @@ function Index() {
           src={logo}
           width="500"
           height="350"
-          onClick={() => setPlatformID(0)}
+          onClick={() => {
+            setPlatformID(0);
+            setTopics([]);
+          }}
           style={{ cursor: "pointer" }}
           alt="logo"
         />
