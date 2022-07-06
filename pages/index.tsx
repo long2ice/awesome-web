@@ -65,6 +65,7 @@ function Index() {
           height="350"
           onClick={() => setPlatformID(0)}
           style={{ cursor: "pointer" }}
+          alt="logo"
         />
         <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
           <InputBase

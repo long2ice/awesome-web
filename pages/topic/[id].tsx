@@ -18,7 +18,8 @@ import {
 import { Masonry } from "@mui/lab";
 import { Repo } from "../../types/response";
 import { GitHub } from "@mui/icons-material";
-import { AiFillEye, AiFillStar, TbGitFork } from "react-icons/all";
+import { TbGitFork } from "react-icons/tb";
+import { AiFillEye, AiFillStar } from "react-icons/ai";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
@@ -37,7 +38,7 @@ function TopicRepos() {
       let repos = await getTopicRepos(20, 0, id);
       setRepos(repos.data);
     })();
-  }, []);
+  }, [id]);
   return (
     <Container maxWidth="xl">
       <Box
@@ -53,6 +54,7 @@ function TopicRepos() {
           height="350"
           style={{ cursor: "pointer" }}
           onClick={() => router.push("/")}
+          alt="logo"
         />
         <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
           <InputBase
