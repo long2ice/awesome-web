@@ -6,7 +6,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path="/topic" element={<Repo />} />
+      <Route path="/repo" element={<Repo />} />
     </Routes>
   );
 }

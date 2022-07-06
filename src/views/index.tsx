@@ -116,7 +116,7 @@ function Index() {
                     size="small"
                     variant="outlined"
                     startIcon={<MenuBook />}
-                    onClick={() => navigate(`/topic?topic_id=${item.id}`)}
+                    onClick={() => navigate(`/repo?topic_id=${item.id}`)}
                   >
                     Explore
                   </Button>
