@@ -6,41 +6,41 @@ import {
   CardContent,
   Container,
   Grow,
-  IconButton,
   InputBase,
   Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import logo from "../assets/logo.png";
-import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { getPlatform } from "../apis/platform";
 import { Platform, Topic } from "../types/response";
 import Icon from "@mui/material/Icon";
-import MLink from "@mui/material/Link";
 import { getTopic } from "../apis/topic";
 import { GitHub, MenuBook } from "@mui/icons-material";
 import Masonry from "@mui/lab/Masonry";
 import { useNavigate } from "react-router-dom";
+import Highlighter from "react-highlight-words";
+import Footer from "../components/footer";
 
 function Index() {
   const [platforms, setPlatforms] = useState([]);
   const [platformID, setPlatformID] = useState(0);
   const [topics, setTopics] = useState([]);
+  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      if (platformID === 0) {
+      if (platformID === 0 && keyword === "") {
         let data = await getPlatform();
         setPlatforms(data);
       } else {
-        let data = await getTopic(20, 0, platformID, "");
+        let data = await getTopic(platformID, keyword);
         setTopics(data.data);
       }
     })();
-  }, [platformID]);
+  }, [platformID, keyword]);
   return (
     <Container maxWidth="xl">
       <Box
@@ -57,22 +57,26 @@ function Index() {
           onClick={() => {
             setPlatformID(0);
             setTopics([]);
+            setKeyword("");
           }}
           style={{ cursor: "pointer" }}
           alt="logo"
         />
         <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
           <InputBase
-            sx={{ ml: 1, flex: 1 }}
+            sx={{ ml: 1, my: 1, flex: 1 }}
+            value={keyword}
             placeholder="Search awesome projects here..."
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              setTopics([]);
+            }}
           />
-          <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-            <SearchIcon />
-          </IconButton>
         </Paper>
       </Box>
       <Masonry spacing={2}>
         {platformID === 0 &&
+          keyword === "" &&
           platforms.map((item: Platform) => (
             <Grow in={true} key={item.id}>
               <Card
@@ -90,17 +94,28 @@ function Index() {
               </Card>
             </Grow>
           ))}
-        {platformID !== 0 &&
+        {(platformID !== 0 || keyword !== "") &&
           topics.map((item: Topic) => (
             <Grow in={true} key={item.id}>
               <Card>
                 <CardContent>
                   <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
-                    {item.name}
-                    {item.sub_name === undefined ? "" : ` - ${item.sub_name}`}
+                    <Highlighter
+                      searchWords={[keyword]}
+                      textToHighlight={item.name}
+                    />
+                    <Highlighter
+                      searchWords={[keyword]}
+                      textToHighlight={
+                        item.sub_name === undefined ? "" : ` - ${item.sub_name}`
+                      }
+                    />
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {item.description}
+                    <Highlighter
+                      searchWords={[keyword]}
+                      textToHighlight={item.description}
+                    />
                   </Typography>
                 </CardContent>
                 <CardActions>
@@ -125,19 +140,7 @@ function Index() {
             </Grow>
           ))}
       </Masonry>
-      <Box flexDirection="row" display="flex" justifyContent="center">
-        <p>
-          Copyright © 2022 - All right reserved by
-          <MLink
-            href="https://github.com/long2ice"
-            target="_blank"
-            rel="noreferrer"
-            ml={1}
-          >
-            long2ice
-          </MLink>
-        </p>
-      </Box>
+      <Footer />
     </Container>
   );
 }

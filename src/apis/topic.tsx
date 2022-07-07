@@ -1,17 +1,10 @@
 import axios from "../axios";
 
-async function getTopic(
-  limit: number,
-  offset: number,
-  platform_id?: number,
-  keyword?: string
-) {
+async function getTopic(platform_id?: number, keyword?: string) {
   const response = await axios.get(`/topic`, {
     params: {
       platform_id,
       keyword,
-      limit,
-      offset,
     },
   });
   return response.data;

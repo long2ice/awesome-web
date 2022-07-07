@@ -10,7 +10,6 @@ import {
   Container,
   Drawer,
   Grow,
-  IconButton,
   InputBase,
   List,
   ListItemButton,
@@ -27,18 +26,19 @@ import { AiFillStar } from "react-icons/ai";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import logo from "../assets/logo.png";
-import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoFilter } from "react-icons/io5";
 import { BsFiles } from "react-icons/bs";
 import { GoRepo } from "react-icons/go";
 import { getSubTopics } from "../apis/topic";
+import Highlighter from "react-highlight-words";
+import Footer from "../components/footer";
 
 dayjs.extend(relativeTime);
 
 function TopicRepos() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [showNoData, setShowNoData] = useState(false);
   const [data, setData] = useState<Repos>({
     data: [],
@@ -50,6 +50,11 @@ function TopicRepos() {
   const [type, setType] = useState("");
   const [subTopic, setSubTopic] = useState("");
   const [open, setOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [bottom, setBottom] = useState(false);
+
+  const limit = 20;
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -59,56 +64,68 @@ function TopicRepos() {
       ) {
         return;
       }
-
       setOpen(open);
     };
   useEffect(() => {
     (async () => {
       const topic_id = searchParams.get("topic_id") ?? "";
-      setSubTopics(await getSubTopics(topic_id, type));
+      setSubTopics((await getSubTopics(topic_id, type)) ?? []);
     })();
   }, [searchParams, type]);
   useEffect(() => {
-    let limit = 20;
-    let offset = 0;
+    (async () => {
+      const topic_id = searchParams.get("topic_id") ?? "";
+      let res = await getTopicRepos(
+        limit,
+        offset,
+        topic_id,
+        keyword,
+        subTopic,
+        type
+      );
+      setData({
+        total: res.total,
+        repo_total: res.repo_total,
+        resource_total: res.resource_total,
+        data: [...data.data, ...res.data],
+      });
+    })();
+  }, [offset]);
+  useEffect(() => {
+    if (
+      bottom &&
+      ((type === "" && offset < data.total) ||
+        (type === "repo" && offset < data.repo_total) ||
+        (type === "resource" && offset < data.resource_total))
+    ) {
+      setOffset((offset) => offset + limit);
+    }
+    if (
+      bottom &&
+      ((type === "" && offset >= data.total) ||
+        (type === "repo" && offset >= data.repo_total) ||
+        (type === "resource" && offset >= data.resource_total))
+    ) {
+      setShowNoData(true);
+    }
+  }, [bottom]);
+  useEffect(() => {
     window.addEventListener(
       "scroll",
       async (e) => {
-        const bottom =
+        setBottom(
           Math.ceil(window.innerHeight + window.scrollY) >=
-          document.documentElement.scrollHeight;
-        if (bottom && offset < data.total) {
-          offset = offset + limit;
-          const topic_id = searchParams.get("topic_id") ?? "";
-          const keyword = searchParams.get("keyword") ?? "";
-          let res = await getTopicRepos(
-            limit,
-            offset,
-            topic_id,
-            keyword,
-            subTopic,
-            type
-          );
-          setData({
-            total: res.total,
-            repo_total: res.repo_total,
-            resource_total: res.resource_total,
-            data: [...data.data, ...res.data],
-          });
-          // @ts-ignore
-          setRepos((repos) => [...repos, ...data.data]);
-        }
-        if (bottom && offset >= data.total) {
-          setShowNoData(true);
-        }
+            document.documentElement.scrollHeight
+        );
       },
       {
         passive: true,
       }
     );
+  }, []);
+  useEffect(() => {
     (async () => {
       const topic_id = searchParams.get("topic_id") ?? "";
-      const keyword = searchParams.get("keyword") ?? "";
       let data = await getTopicRepos(
         limit,
         offset,
@@ -119,7 +136,18 @@ function TopicRepos() {
       );
       setData(data);
     })();
-  }, [searchParams, type, subTopic]);
+  }, [searchParams, type, subTopic, keyword]);
+  const handleSwitch = (type: string) => {
+    setData({
+      total: data.total,
+      repo_total: data.repo_total,
+      resource_total: data.resource_total,
+      data: [],
+    });
+    setType(type);
+    setOffset(0);
+    setBottom(false);
+  };
   return (
     <Container maxWidth="xl">
       <Box
@@ -139,26 +167,32 @@ function TopicRepos() {
         />
         <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
           <InputBase
-            sx={{ ml: 1, flex: 1 }}
+            sx={{ ml: 1, my: 1, flex: 1 }}
+            value={keyword}
             placeholder="Search awesome projects here..."
+            onChange={(e) => {
+              setKeyword(e.target.value);
+            }}
           />
-          <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-            <SearchIcon />
-          </IconButton>
         </Paper>
         <Stack direction="row" spacing={2} mt={2}>
-          <Button variant="contained">All ({data.total})</Button>
           <Button
-            variant="contained"
+            variant={type === "" ? "contained" : "outlined"}
+            onClick={() => handleSwitch("")}
+          >
+            All ({data.total})
+          </Button>
+          <Button
+            variant={type === "repo" ? "contained" : "outlined"}
             startIcon={<GoRepo />}
-            onClick={() => setType("repo")}
+            onClick={() => handleSwitch("repo")}
           >
             Repositories ({data.repo_total})
           </Button>
           <Button
-            variant="contained"
+            variant={type === "resource" ? "contained" : "outlined"}
             startIcon={<BsFiles />}
-            onClick={() => setType("resource")}
+            onClick={() => handleSwitch("resource")}
           >
             Resources ({data.resource_total})
           </Button>
@@ -188,10 +222,16 @@ function TopicRepos() {
             >
               <CardContent>
                 <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
-                  {item.name}
+                  <Highlighter
+                    searchWords={[keyword]}
+                    textToHighlight={item.name}
+                  />
                 </Typography>
                 <Typography mt={2} variant="body2" color="text.secondary">
-                  {item.description}
+                  <Highlighter
+                    searchWords={[keyword]}
+                    textToHighlight={item.description}
+                  />
                 </Typography>
                 {item.type === "repo" && (
                   <Box mt={2}>
@@ -240,6 +280,7 @@ function TopicRepos() {
           No more data to be fetched...
         </Alert>
       </Snackbar>
+      <Footer />
     </Container>
   );
 }
