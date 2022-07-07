@@ -1,21 +1,27 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getTopicRepos } from "../apis/repo";
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
   Container,
+  Drawer,
   Grow,
   IconButton,
   InputBase,
+  List,
+  ListItemButton,
+  ListItemText,
   Paper,
   Snackbar,
+  Stack,
   Typography,
 } from "@mui/material";
 import { Masonry } from "@mui/lab";
-import { Repo } from "../types/response";
+import { Repo, Repos } from "../types/response";
 import { TbGitFork } from "react-icons/tb";
 import { AiFillStar } from "react-icons/ai";
 import dayjs from "dayjs";
@@ -23,34 +29,76 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import logo from "../assets/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { IoFilter } from "react-icons/io5";
+import { BsFiles } from "react-icons/bs";
+import { GoRepo } from "react-icons/go";
+import { getSubTopics } from "../apis/topic";
 
 dayjs.extend(relativeTime);
 
 function TopicRepos() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [repos, setRepos] = useState([]);
   const [showNoData, setShowNoData] = useState(false);
+  const [data, setData] = useState<Repos>({
+    data: [],
+    repo_total: 0,
+    resource_total: 0,
+    total: 0,
+  });
+  const [subTopics, setSubTopics] = useState([]);
+  const [type, setType] = useState("");
+  const [subTopic, setSubTopic] = useState("");
+  const [open, setOpen] = useState(false);
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
 
+      setOpen(open);
+    };
+  useEffect(() => {
+    (async () => {
+      const topic_id = searchParams.get("topic_id") ?? "";
+      setSubTopics(await getSubTopics(topic_id, type));
+    })();
+  }, [searchParams, type]);
   useEffect(() => {
     let limit = 20;
     let offset = 0;
-    let total = 0;
     window.addEventListener(
       "scroll",
       async (e) => {
         const bottom =
           Math.ceil(window.innerHeight + window.scrollY) >=
           document.documentElement.scrollHeight;
-        if (bottom && offset < total) {
+        if (bottom && offset < data.total) {
           offset = offset + limit;
           const topic_id = searchParams.get("topic_id") ?? "";
-          let data = await getTopicRepos(limit, offset, topic_id);
-          total = data.total;
+          const keyword = searchParams.get("keyword") ?? "";
+          let res = await getTopicRepos(
+            limit,
+            offset,
+            topic_id,
+            keyword,
+            subTopic,
+            type
+          );
+          setData({
+            total: res.total,
+            repo_total: res.repo_total,
+            resource_total: res.resource_total,
+            data: [...data.data, ...res.data],
+          });
           // @ts-ignore
           setRepos((repos) => [...repos, ...data.data]);
         }
-        if (bottom && offset >= total) {
+        if (bottom && offset >= data.total) {
           setShowNoData(true);
         }
       },
@@ -60,11 +108,18 @@ function TopicRepos() {
     );
     (async () => {
       const topic_id = searchParams.get("topic_id") ?? "";
-      let data = await getTopicRepos(limit, offset, topic_id);
-      total = data.total;
-      setRepos(data.data);
+      const keyword = searchParams.get("keyword") ?? "";
+      let data = await getTopicRepos(
+        limit,
+        offset,
+        topic_id,
+        keyword,
+        subTopic,
+        type
+      );
+      setData(data);
     })();
-  }, [searchParams]);
+  }, [searchParams, type, subTopic]);
   return (
     <Container maxWidth="xl">
       <Box
@@ -91,9 +146,41 @@ function TopicRepos() {
             <SearchIcon />
           </IconButton>
         </Paper>
+        <Stack direction="row" spacing={2} mt={2}>
+          <Button variant="contained">All ({data.total})</Button>
+          <Button
+            variant="contained"
+            startIcon={<GoRepo />}
+            onClick={() => setType("repo")}
+          >
+            Repositories ({data.repo_total})
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<BsFiles />}
+            onClick={() => setType("resource")}
+          >
+            Resources ({data.resource_total})
+          </Button>
+          <Button variant="contained" onClick={toggleDrawer(true)}>
+            <IoFilter />
+          </Button>
+          <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
+            <List onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+              {subTopics.map((item) => (
+                <ListItemButton
+                  selected={item === subTopic}
+                  onClick={() => setSubTopic(item)}
+                >
+                  <ListItemText primary={item} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Drawer>
+        </Stack>
       </Box>
       <Masonry spacing={2}>
-        {repos.map((item: Repo) => (
+        {data.data.map((item: Repo) => (
           <Grow in={true} key={item.id}>
             <Card
               onClick={(e) => window.open(item.url)}

@@ -25,4 +25,11 @@ interface Repo {
   updated_at: Date;
 }
 
-export type { Platform, Topic, Repo };
+interface Repos {
+  total: number;
+  repo_total: number;
+  resource_total: number;
+  data: Array<Repo>;
+}
+
+export type { Platform, Topic, Repo, Repos };

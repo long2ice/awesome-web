@@ -4,7 +4,9 @@ async function getTopicRepos(
   limit: number,
   offset: number,
   topic_id?: string | string[] | undefined,
-  keyword?: string
+  keyword?: string,
+  subtopic?: string,
+  type?: string
 ) {
   const response = await axios.get(`/topic/${topic_id}/repo`, {
     params: {
@@ -12,6 +14,8 @@ async function getTopicRepos(
       keyword,
       limit,
       offset,
+      subtopic,
+      type,
     },
   });
   return response.data;

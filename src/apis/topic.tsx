@@ -17,4 +17,13 @@ async function getTopic(
   return response.data;
 }
 
-export { getTopic };
+async function getSubTopics(topic_id: string, type: string) {
+  const response = await axios.get(`/topic/${topic_id}/subtopics`, {
+    params: {
+      type,
+    },
+  });
+  return response.data;
+}
+
+export { getTopic, getSubTopics };
