@@ -102,26 +102,20 @@ function TopicRepos() {
     }
     if (
       bottom &&
-      ((type === "" && offset >= data.total) ||
-        (type === "repo" && offset >= data.repo_total) ||
-        (type === "resource" && offset >= data.resource_total))
+      ((type === "" && offset > data.total) ||
+        (type === "repo" && offset > data.repo_total) ||
+        (type === "resource" && offset > data.resource_total))
     ) {
       setShowNoData(true);
     }
   }, [bottom]);
   useEffect(() => {
-    window.addEventListener(
-      "scroll",
-      async (e) => {
-        setBottom(
-          Math.ceil(window.innerHeight + window.scrollY) >=
-            document.documentElement.scrollHeight
-        );
-      },
-      {
-        passive: true,
-      }
-    );
+    window.addEventListener("scroll", (e) => {
+      setBottom(
+        Math.ceil(window.innerHeight + window.scrollY) >=
+          document.documentElement.scrollHeight
+      );
+    });
   }, []);
   useEffect(() => {
     (async () => {
