@@ -160,7 +160,7 @@ function TopicRepos() {
         />
         <Paper component="form" sx={{ width: "100%" }}>
           <InputBase
-            sx={{ ml: 1, my: 1, flex: 1 }}
+            sx={{ ml: 1, my: 1, flex: 1, width: "100%" }}
             value={keyword}
             placeholder="Search awesome projects here..."
             onChange={(e) => {
