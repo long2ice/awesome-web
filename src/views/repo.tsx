@@ -159,7 +159,7 @@ function TopicRepos() {
           onClick={() => navigate("/")}
           alt="logo"
         />
-        <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
+        <Paper component="form" sx={{ width: "100%" }}>
           <InputBase
             sx={{ ml: 1, my: 1, flex: 1 }}
             value={keyword}
@@ -169,7 +169,13 @@ function TopicRepos() {
             }}
           />
         </Paper>
-        <Stack direction="row" spacing={2} mt={2}>
+        <Stack
+          direction="row"
+          gap={2}
+          mt={2}
+          display="flex"
+          sx={{ flexWrap: "wrap" }}
+        >
           <Button
             variant={type === "" ? "contained" : "outlined"}
             onClick={() => handleSwitch("")}
@@ -199,6 +205,7 @@ function TopicRepos() {
                 <ListItemButton
                   selected={item === subTopic}
                   onClick={() => setSubTopic(item)}
+                  key={item}
                 >
                   <ListItemText primary={item} />
                 </ListItemButton>
@@ -207,12 +214,12 @@ function TopicRepos() {
           </Drawer>
         </Stack>
       </Box>
-      <Masonry spacing={2}>
+      <Masonry spacing={2} columns={{ sm: 1, lg: 4 }}>
         {data.data.map((item: Repo) => (
           <Grow in={true} key={item.id}>
             <Card
               onClick={(e) => window.open(item.url)}
-              sx={{ cursor: "pointer" }}
+              sx={{ cursor: "pointer", width: "100%" }}
             >
               <CardContent>
                 <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>

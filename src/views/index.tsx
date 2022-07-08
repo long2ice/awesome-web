@@ -62,9 +62,9 @@ function Index() {
           style={{ cursor: "pointer" }}
           alt="logo"
         />
-        <Paper component="form" sx={{ minWidth: "50%", display: "flex" }}>
+        <Paper component="form" sx={{ width: "100%" }}>
           <InputBase
-            sx={{ ml: 1, my: 1, flex: 1 }}
+            sx={{ ml: 1, my: 1, flex: 1, width: "100%" }}
             value={keyword}
             placeholder="Search awesome projects here..."
             onChange={(e) => {
@@ -80,7 +80,7 @@ function Index() {
           platforms.map((item: Platform) => (
             <Grow in={true} key={item.id}>
               <Card
-                sx={{ cursor: "pointer", minWidth: 320 }}
+                sx={{ cursor: "pointer", width: "100%" }}
                 onClick={() => setPlatformID(item.id)}
               >
                 <CardContent>
@@ -97,7 +97,7 @@ function Index() {
         {(platformID !== 0 || keyword !== "") &&
           topics.map((item: Topic) => (
             <Grow in={true} key={item.id}>
-              <Card>
+              <Card sx={{ width: "100%" }}>
                 <CardContent>
                   <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
                     <Highlighter

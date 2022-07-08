@@ -35,7 +35,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Box display="flex">
         <IconButton
-          sx={{ ml: "auto", pr: 4, pt: 4 }}
+          sx={{ ml: "auto", mr: 2, mt: 2 }}
           onClick={() =>
             setMode((prevMode) => (prevMode === "light" ? "dark" : "light"))
           }
