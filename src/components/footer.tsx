@@ -1,9 +1,9 @@
 import MLink from "@mui/material/Link";
 import { Box } from "@mui/material";
 
-function Footer() {
+function Footer(props: Record<string, any>) {
   return (
-    <Box flexDirection="row" display="flex" justifyContent="center">
+    <Box flexDirection="row" display="flex" justifyContent="center" {...props}>
       <p>
         Copyright © 2022 - All right reserved by
         <MLink

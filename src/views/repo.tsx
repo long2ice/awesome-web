@@ -32,7 +32,6 @@ import { BsFiles } from "react-icons/bs";
 import { GoRepo } from "react-icons/go";
 import { getSubTopics } from "../apis/topic";
 import Highlighter from "react-highlight-words";
-import Footer from "../components/footer";
 
 dayjs.extend(relativeTime);
 
@@ -281,7 +280,6 @@ function TopicRepos() {
           No more data to be fetched...
         </Alert>
       </Snackbar>
-      <Footer />
     </Container>
   );
 }

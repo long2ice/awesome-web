@@ -12,6 +12,7 @@ import {
 import { useMemo, useState } from "react";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Footer from "./components/footer";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -33,26 +34,29 @@ function App() {
   );
   return (
     <ThemeProvider theme={theme}>
-      <Box display="flex">
-        <IconButton
-          sx={{ ml: "auto", mr: 2, mt: 2 }}
-          onClick={() =>
-            setMode((prevMode) => (prevMode === "light" ? "dark" : "light"))
-          }
-          color="inherit"
-        >
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
+      <Box display="flex" flexDirection="column" minHeight="100vh">
+        <Box display="flex">
+          <IconButton
+            sx={{ ml: "auto", mr: 2, mt: 2 }}
+            onClick={() =>
+              setMode((prevMode) => (prevMode === "light" ? "dark" : "light"))
+            }
+            color="inherit"
+          >
+            {theme.palette.mode === "dark" ? (
+              <Brightness7Icon />
+            ) : (
+              <Brightness4Icon />
+            )}
+          </IconButton>
+        </Box>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/repo" element={<Repo />} />
+        </Routes>
+        <Footer mt="auto" />
       </Box>
-      <CssBaseline />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/repo" element={<Repo />} />
-      </Routes>
     </ThemeProvider>
   );
 }

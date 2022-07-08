@@ -5,6 +5,7 @@ import {
   CardActions,
   CardContent,
   Container,
+  Grid,
   Grow,
   InputBase,
   Paper,
@@ -18,10 +19,8 @@ import { Platform, Topic } from "../types/response";
 import Icon from "@mui/material/Icon";
 import { getTopic } from "../apis/topic";
 import { GitHub, MenuBook } from "@mui/icons-material";
-import Masonry from "@mui/lab/Masonry";
 import { useNavigate } from "react-router-dom";
 import Highlighter from "react-highlight-words";
-import Footer from "../components/footer";
 
 function Index() {
   const [platforms, setPlatforms] = useState([]);
@@ -74,73 +73,78 @@ function Index() {
           />
         </Paper>
       </Box>
-      <Masonry spacing={2} sx={{ minHeight: 490 }}>
+      <Grid container spacing={2}>
         {platformID === 0 &&
           keyword === "" &&
           platforms.map((item: Platform) => (
-            <Grow in={true} key={item.id}>
-              <Card
-                sx={{ cursor: "pointer", width: "100%" }}
-                onClick={() => setPlatformID(item.id)}
-              >
-                <CardContent>
-                  <Stack direction="row" spacing={2}>
-                    <Icon color="primary">{item.icon}</Icon>
-                    <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
-                      {item.name}
-                    </Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grow>
+            <Grid item>
+              <Grow in={true} key={item.id}>
+                <Card
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => setPlatformID(item.id)}
+                >
+                  <CardContent>
+                    <Stack direction="row" spacing={2}>
+                      <Icon color="primary">{item.icon}</Icon>
+                      <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
+                        {item.name}
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grow>
+            </Grid>
           ))}
         {(platformID !== 0 || keyword !== "") &&
           topics.map((item: Topic) => (
-            <Grow in={true} key={item.id}>
-              <Card sx={{ width: "100%" }}>
-                <CardContent>
-                  <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
-                    <Highlighter
-                      searchWords={[keyword]}
-                      textToHighlight={item.name}
-                    />
-                    <Highlighter
-                      searchWords={[keyword]}
-                      textToHighlight={
-                        item.sub_name === undefined ? "" : ` - ${item.sub_name}`
-                      }
-                    />
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Highlighter
-                      searchWords={[keyword]}
-                      textToHighlight={item.description}
-                    />
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => window.open(item.github_url)}
-                    variant="outlined"
-                    startIcon={<GitHub />}
-                  >
-                    View in GitHub
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<MenuBook />}
-                    onClick={() => navigate(`/repo?topic_id=${item.id}`)}
-                  >
-                    Explore
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grow>
+            <Grid item>
+              <Grow in={true} key={item.id}>
+                <Card sx={{ width: "100%" }}>
+                  <CardContent>
+                    <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
+                      <Highlighter
+                        searchWords={[keyword]}
+                        textToHighlight={item.name}
+                      />
+                      <Highlighter
+                        searchWords={[keyword]}
+                        textToHighlight={
+                          item.sub_name === undefined
+                            ? ""
+                            : ` - ${item.sub_name}`
+                        }
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      <Highlighter
+                        searchWords={[keyword]}
+                        textToHighlight={item.description}
+                      />
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => window.open(item.github_url)}
+                      variant="outlined"
+                      startIcon={<GitHub />}
+                    >
+                      View in GitHub
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<MenuBook />}
+                      onClick={() => navigate(`/repo?topic_id=${item.id}`)}
+                    >
+                      Explore
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grow>
+            </Grid>
           ))}
-      </Masonry>
-      <Footer />
+      </Grid>
     </Container>
   );
 }
