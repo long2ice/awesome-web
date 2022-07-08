@@ -74,7 +74,7 @@ function Index() {
           />
         </Paper>
       </Box>
-      <Masonry spacing={2}>
+      <Masonry spacing={2} sx={{ minHeight: 490 }}>
         {platformID === 0 &&
           keyword === "" &&
           platforms.map((item: Platform) => (
