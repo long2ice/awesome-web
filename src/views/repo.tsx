@@ -203,7 +203,10 @@ function TopicRepos() {
               {subTopics.map((item) => (
                 <ListItemButton
                   selected={item === subTopic}
-                  onClick={() => setSubTopic(item)}
+                  onClick={() => {
+                    setSubTopic(item);
+                    setOffset(0);
+                  }}
                   key={item}
                 >
                   <ListItemText primary={item} />
