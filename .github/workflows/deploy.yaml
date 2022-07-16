@@ -14,6 +14,7 @@ jobs:
       - name: Run build
         env:
           REACT_APP_API_URL: https://awesome-api.long2ice.io
+          CI: False
         run: npm run build
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
