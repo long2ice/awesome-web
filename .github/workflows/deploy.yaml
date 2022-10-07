@@ -16,11 +16,12 @@ jobs:
           REACT_APP_API_URL: /api
           CI: False
         run: npm run build
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.KEY }}
-          REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: "/var/www/awesome-web"
-          SOURCE: "build/"
+      - name: Minio Deploy
+        uses: mamal72/minio-perfect-deploy-action@main
+        with:
+          endpoint: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_ACCESS_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET_KEY }}
+          bucket: "website"
+          source_dir: "build"
+          target_dir: "/awesome-web"
